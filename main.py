@@ -1,18 +1,17 @@
 import streamlit as st
-from scrape import scrapeWebsite
-from bs4 import BeautifulSoup
+from scrape import (scrapeWebsite, cleanBodyContent, extractBodyContent, splitDomContent)
 
 st.title("AI Web Scrapper")
 url = st.text_input("Enter Website URL:")
 
 if st.button("Scrape Site"):
     st.write("Scrapping Website")
-    result = scrapeWebsite(url)
-    print(result)
 
-def extractBodyContent(htmlContent):
-    soup = BeautifulSoup(htmlContent, "html.parser")
-    bodyContent = soup.body
-    if bodyContent:
-        return str(bodyContent)
-    return ""
+    result = scrapeWebsite(url)
+    bodyContent = extractBodyContent(result)
+    cleanedContent = cleanBodyContent(bodyContent)
+
+    st.session_state.dom_content = cleanedContent
+
+    with st.expander("View DON Content"):
+        st.text_area("DOM Content", cleanedContent, height=300)
